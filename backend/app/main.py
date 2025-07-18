@@ -18,3 +18,14 @@ def get_db():
 @app.get("/todos/", response_model=list[schemas.TodoOut])
 def read_todos(db: Session = Depends(get_db)):
     return crud.get_todos(db)
+
+@app.post("/todos/", response_model=schemas.TodoOut)
+def create_todo(todo: schemas.TodoCreate, db: Session = Depends(get_db)):
+    return crud.create_todo(db, todo)
+
+@app.delete("/todos/{todo_id}")
+def delete_todo(todo_id: int, db: Session = Depends(get_db)):
+    ok = crud.delete_todo(db, todo_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    return {"result":"deleted"}
